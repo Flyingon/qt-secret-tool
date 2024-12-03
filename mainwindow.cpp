@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(delegate, &SecretItemDelegate::editClicked, [&](const QModelIndex &index) {
         // 编辑操作
         qDebug() << "Edit clicked:" << index.row();
+
     });
 
     QObject::connect(delegate, &SecretItemDelegate::deleteClicked, [&](const QModelIndex &index) {
