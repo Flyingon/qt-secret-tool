@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(delegate, &SecretItemDelegate::editClicked, [&](const QModelIndex &index) {
         // 编辑操作
         qDebug() << "Edit clicked:" << index.row();
+        onEditButtonClicked(index.row()); // 调用成员函数处理
 
     });
 
@@ -44,5 +45,16 @@ void MainWindow::on_newSecret_clicked()
     std::cout << "click new Secret button" << std::endl;
     addSecretWindow = new AddSecretWindow();
     addSecretWindow->show();
+}
+
+void MainWindow::onEditButtonClicked(int index) {
+    openAddSecretWindow(index); // 调用成员函数，传递当前的 index
+}
+
+void MainWindow::openAddSecretWindow(int index) {
+    AddSecretWindow *window = new AddSecretWindow();
+    qDebug() << "Secret Item: " << index;
+    // window->setSecret(secrets[index]); // 传递当前的 item
+    window->show();
 }
 

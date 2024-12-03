@@ -22,6 +22,7 @@ public:
 
 private slots:
     void on_newSecret_clicked();
+    void onEditButtonClicked(int index); // 成员函数槽，处理编辑操作
 
 private:
     Ui::MainWindow *ui;
@@ -30,5 +31,6 @@ private:
 private:
     SecretListModel *itemModel;
     void showList();
+    void openAddSecretWindow(int index); // 打开 AddSecretWindow 的函数
 };
 #endif // MAINWINDOW_H

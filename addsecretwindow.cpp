@@ -36,7 +36,19 @@ void AddSecretWindow::on_buttonBox_accepted()
 
 void AddSecretWindow::on_buttonBox_clicked(QAbstractButton *button)
 {
-    this->close();
-    return;
+    // 获取按钮的角色
+    QDialogButtonBox::ButtonRole role = ui->buttonBox->buttonRole(button);
+
+    // 判断按钮的角色
+    if (role == QDialogButtonBox::RejectRole) {
+        // 点击了取消按钮（RejectRole）
+        qDebug() << "Clicked Cancel button";
+        this->close();
+    } else if (role == QDialogButtonBox::AcceptRole) {
+        // 点击了确认按钮（AcceptRole）
+        // qDebug() << "Clicked Ok button";
+        // 可以触发 on_buttonBox_accepted() 手动处理确认操作
+        // on_buttonBox_accepted();
+    }
 }
 
