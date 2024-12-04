@@ -1,5 +1,5 @@
-#include "addsecretwindow.h"
-#include "ui_addsecretwindow.h"
+#include "savesecretwindow.h"
+#include "ui_savesecretwindow.h"
 #include "./database/DatabaseManager.h"
 #include <QMessageBox>
 #include <QDebug>
@@ -9,11 +9,26 @@ AddSecretWindow::AddSecretWindow(QWidget *parent)
     , ui(new Ui::AddSecretWindow)
 {
     ui->setupUi(this);
+
+    // ui->label->setText("编辑内容");
+    // ui->plainTextEdit->setPlainText(secretItem.key);
+    // ui->textEdit->setText(secretItem.secret);
+
 }
 
 AddSecretWindow::~AddSecretWindow()
 {
     delete ui;
+}
+
+// 设置位编辑
+void AddSecretWindow::SetToEdit(const SecretItem& secretItem)
+{
+    // 修改标签文本样式
+    ui->label->setText("编辑");
+    // 设置对应的文本编辑框内容
+    ui->plainTextEdit->setPlainText(secretItem.key);
+    ui->textEdit->setText(secretItem.secret);
 }
 
 void AddSecretWindow::on_buttonBox_accepted()
@@ -24,7 +39,12 @@ void AddSecretWindow::on_buttonBox_accepted()
     }
     qDebug() << "click on_buttonBox_accepted" << ui->plainTextEdit->toPlainText() << ui->textEdit->toPlainText();
     QString errMsg;
-    if(DatabaseManager::instance().addPassword(ui->plainTextEdit->toPlainText(), ui->textEdit->toPlainText(), errMsg)) {
+
+    DBSecretItem newItem;
+    newItem.key = ui->plainTextEdit->toPlainText();
+    newItem.secret = ui->textEdit->toPlainText();
+    if(DatabaseManager::instance().saveSecret(newItem, errMsg)) {
+        emit saveSuccess();  // 发射保存成功信号
         this->close();
         return;
     } else {

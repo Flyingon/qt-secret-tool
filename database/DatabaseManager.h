@@ -5,6 +5,14 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QDate>
+
+struct DBSecretItem {
+    QString key;
+    QString secret;
+    QDate createdAt;
+    QDate updatedAt;
+};
 
 class DatabaseManager : public QObject
 {
@@ -20,16 +28,19 @@ public:
     void closeDatabase();
 
     // 添加密码记录
-    bool addPassword(const QString& account, const QString& password, QString &errMsg);
+    bool saveSecret(const DBSecretItem& item, QString &errMsg);
 
     // 根据账号删除密码记录
-    bool deletePassword(const QString& account);
+    bool deleteSecret(const QString& key);
 
     // 更新密码记录
-    bool updatePassword(const QString& account, const QString& newPassword);
+    bool updateSecret(const DBSecretItem& item, QString &errMsg);
 
     // 根据账号查询密码记录
-    bool queryPassword(const QString& account, QString& password);
+    bool querySecret(const QString& key, QString& secret);
+
+    // 查询密码记录列表
+    bool querySecretList(const QString& key, int pageIndex, int pageSize, std::vector<DBSecretItem>& resultList);
 
     // 全文搜索密码记录（简单示例，可根据实际需求完善）
     QList<QString> fullTextSearch(const QString& keyword);

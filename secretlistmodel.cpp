@@ -13,16 +13,16 @@ QVariant SecretListModel::data(const QModelIndex &index, int role) const {
 
     const SecretItem &item = items.at(index.row());
     if (role == Qt::DisplayRole) {
-        return item.name;
+        return item.key;
     } else if (role == Qt::UserRole) {
-        return item.details;
+        return item.secret;
     }
     return {};
 }
 
 bool SecretListModel::setData(const QModelIndex &index, const QVariant &value, int role) {
     if (index.isValid() && role == Qt::EditRole) {
-        items[index.row()].name = value.toString();
+        items[index.row()].key = value.toString();
         emit dataChanged(index, index, {role});
         return true;
     }
@@ -44,4 +44,14 @@ void SecretListModel::removeItem(int row) {
     beginRemoveRows(QModelIndex(), row, row);
     items.removeAt(row);
     endRemoveRows();
+}
+
+// 实现清理所有item的方法
+void SecretListModel::clearAllItems()
+{
+    if (items.isEmpty()) return;  // 如果列表已经为空，直接返回
+
+    beginResetModel();  // 开始重置模型状态
+    items.clear();  // 清空数据项列表
+    endResetModel();  // 结束重置模型状态，通知视图更新
 }

@@ -39,6 +39,7 @@ void SecretItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 }
 
 bool SecretItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
+
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         QRect editRect(option.rect.right() - 100, option.rect.top(), 40, option.rect.height());

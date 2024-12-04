@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "addsecretwindow.h"
+#include "savesecretwindow.h"
 #include "secretlistmodel.h"
 #include "secretitemdelegate.h"
 
@@ -23,6 +23,7 @@ public:
 private slots:
     void on_newSecret_clicked();
     void onEditButtonClicked(int index); // 成员函数槽，处理编辑操作
+    void handleSaveSecretSuccess();  // 新增槽函数，用于处理 SaveSecretSuccess 关闭事件并调用showList方法
 
 private:
     Ui::MainWindow *ui;
@@ -31,6 +32,7 @@ private:
 private:
     SecretListModel *itemModel;
     void showList();
+    void showSelectedSecret(const QModelIndex &index);
     void openAddSecretWindow(int index); // 打开 AddSecretWindow 的函数
 };
 #endif // MAINWINDOW_H

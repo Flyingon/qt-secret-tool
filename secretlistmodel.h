@@ -5,8 +5,8 @@
 #include <QVariant>
 
 struct SecretItem {
-    QString name;
-    QString details;
+    QString key;
+    QString secret;
 };
 
 class SecretListModel : public QAbstractListModel {
@@ -22,7 +22,7 @@ public:
 
     void addItem(const SecretItem &item);
     void removeItem(int row);
-
+    void clearAllItems();  // 新增清理所有item的方法声明
 private:
     QList<SecretItem> items;
 };
