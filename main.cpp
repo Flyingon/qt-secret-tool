@@ -20,8 +20,11 @@ int main(int argc, char *argv[])
     QIcon icon(":/icons/icon_yellow.png");
     app.setWindowIcon(icon);
 
+    QString appDirPath = QCoreApplication::applicationDirPath();
+    qDebug() << "应用程序二进制可执行文件所在路径: " << appDirPath;
+    QString dbPath = appDirPath + "/secret_tool.db";
     // 初始化数据库管理器单例并打开数据库连接
-    if (!DatabaseManager::instance().openDatabase()) {
+    if (!DatabaseManager::instance().openDatabase(dbPath)) {
         return -1;
     }
 

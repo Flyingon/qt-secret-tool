@@ -22,7 +22,7 @@ public:
     static DatabaseManager& instance();
 
     // 打开数据库连接
-    bool openDatabase();
+    bool openDatabase(QString dbPath);
 
     // 关闭数据库连接
     void closeDatabase();

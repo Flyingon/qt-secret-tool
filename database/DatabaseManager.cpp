@@ -1,15 +1,14 @@
 #include "DatabaseManager.h"
+#include <QDir>
+#include <QMessageBox>
 
-
-// 数据库文件名
-const QString DATABASE_NAME = "secret_tool.db";
 
 DatabaseManager::DatabaseManager(QObject* parent)
     : QObject(parent)
 {
     // 添加SQLite数据库驱动
     m_database = QSqlDatabase::addDatabase("QSQLITE");
-    m_database.setDatabaseName(DATABASE_NAME);
+    // m_database.setDatabaseName(DATABASE_NAME);
 }
 
 DatabaseManager::~DatabaseManager()
@@ -25,9 +24,11 @@ DatabaseManager& DatabaseManager::instance()
 }
 
 // 打开数据库连接
-bool DatabaseManager::openDatabase()
+bool DatabaseManager::openDatabase(QString dbPath)
 {
+    m_database.setDatabaseName(dbPath);
     if (!m_database.open()) {
+        QMessageBox::critical(nullptr, "无法打开数据库：", dbPath);
         qDebug() << "无法打开数据库：" << m_database.lastError().text();
         return false;
     }
