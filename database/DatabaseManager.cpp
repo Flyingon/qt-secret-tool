@@ -178,21 +178,24 @@ bool DatabaseManager::querySecretList(const QString& key, int pageIndex, int pag
 }
 
 // 全文搜索密码记录（简单示例，可根据实际需求完善）
-QList<QString> DatabaseManager::fullTextSearch(const QString& keyword)
+bool DatabaseManager::fullTextSearch(const QString& keyword, std::vector<DBSecretItem>& resultList)
 {
-    QList<QString> results;
     QSqlQuery query(m_database);
-    query.prepare("SELECT key FROM t_secret WHERE key LIKE :keyword OR password LIKE :keyword");
+    query.prepare("SELECT key, secret, created_at, updated_at FROM t_secret WHERE key LIKE :keyword OR secret LIKE :keyword");
     query.bindValue(":keyword", "%" + keyword + "%");
 
     if (!query.exec()) {
         qDebug() << "全文搜索失败：" << query.lastError().text();
-        return results;
+        return false;
     }
 
     while (query.next()) {
-        results.append(query.value(0).toString());
+        DBSecretItem item;
+        item.key = query.value(0).toString();
+        item.secret = query.value(1).toString();
+        item.createdAt = query.value(2).toDate();  // 假设数据库中created_at字段对应的是日期类型，可根据实际情况调整类型转换
+        item.updatedAt = query.value(3).toDate();  // 同理，假设updated_at字段对应的是日期类型
+        resultList.push_back(item);
     }
-
-    return results;
+    return true;
 }

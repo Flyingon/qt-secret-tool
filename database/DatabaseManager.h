@@ -43,7 +43,7 @@ public:
     bool querySecretList(const QString& key, int pageIndex, int pageSize, std::vector<DBSecretItem>& resultList);
 
     // 全文搜索密码记录（简单示例，可根据实际需求完善）
-    QList<QString> fullTextSearch(const QString& keyword);
+    bool fullTextSearch(const QString& keyword, std::vector<DBSecretItem>& resultList);
 
 private:
     DatabaseManager(QObject* parent = nullptr);

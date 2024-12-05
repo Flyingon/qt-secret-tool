@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 连接列表项点击信号到槽函数，用于显示对应secret
     QObject::connect(ui->listViewKey, &QListView::clicked, this, &MainWindow::showSelectedSecret);
 
-    this->showList();
+    this->showList(QString());
 }
 
 MainWindow::~MainWindow()
@@ -46,11 +46,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::showList() {
+void MainWindow::showPageList(int pageIndex, int pageSize) {
 
     std::vector<DBSecretItem> resultList;
     QString keyFilter = QString::fromStdString("");
-    if (DatabaseManager::instance().querySecretList(keyFilter, 0, 100, resultList)) {
+    if (DatabaseManager::instance().querySecretList(keyFilter, pageIndex, pageSize, resultList)) {
         itemModel->clearAllItems();
         for (const auto& item : resultList) {
             // qDebug() << "账号(key): " << item.key
@@ -64,8 +64,39 @@ void MainWindow::showList() {
     }
 }
 
+void MainWindow::showSearchList(const QString &searchKey) {
+
+    std::vector<DBSecretItem> resultList;
+    if (DatabaseManager::instance().fullTextSearch(searchKey, resultList)) {
+        itemModel->clearAllItems();
+        for (const auto& item : resultList) {
+            // qDebug() << "账号(key): " << item.key
+            //          << ", 密码(secret): " << item.secret
+            //          << ", 创建时间(created_at): " << item.createdAt.toString("yyyy-MM-dd hh:mm:ss")
+            //          << ", 更新时间(updated_at): " << item.updatedAt.toString("yyyy-MM-dd hh:mm:ss");
+            itemModel->addItem({item.key, item.secret});
+        }
+    } else {
+        qDebug() << "搜索密码记录列表失败";
+    }
+}
+
+void MainWindow::showList(const QString &searchKey) {
+    if (searchKey.isEmpty()) {
+        showPageList(0, 1000);
+        return;
+    }
+    showSearchList(searchKey);
+    return;
+}
+
 void MainWindow::showSelectedSecret(const QModelIndex &index)
 {
+    this -> refreshDisplayContent(index);
+}
+
+// 用于根据索引刷新展示内容
+void MainWindow::refreshDisplayContent(const QModelIndex &index) {
     if (index.isValid()) {
         QVariant secretVariant = itemModel->data(index, Qt::UserRole);
         if (secretVariant.isValid()) {
@@ -93,6 +124,7 @@ void MainWindow::openAddSecretWindow(int index) {
 
     if (index >= 0) // 修改
     {
+        this->editRowIndex = index; // 记录当前修改的行号
         // 先获取对应索引的QModelIndex对象
         QModelIndex modelIndex = itemModel->index(index, 0);
         if (modelIndex.isValid()) {
@@ -117,8 +149,20 @@ void MainWindow::openAddSecretWindow(int index) {
 // TODO 后面可以改成更新其中一行的展示
 void MainWindow::handleSaveSecretSuccess()
 {
-    showList();
-    // TODO 选中更新的这一行
+    int rowToSelect = this->editRowIndex; // 获取要选中的行号
+    QString searchKey = ui->textEditSearch->toPlainText();
+    showList(searchKey);
+    if (rowToSelect >= 0 && rowToSelect < itemModel->rowCount()) {
+        QModelIndex indexToSelect = itemModel->index(rowToSelect, 0);
+        ui->listViewKey->setCurrentIndex(indexToSelect); // 选中该行
+        this -> refreshDisplayContent(indexToSelect);  // 调用封装函数刷新展示内容
+    }
 }
 
+
+void MainWindow::on_textEditSearch_textChanged()
+{
+    QString searchKey = ui->textEditSearch->toPlainText();
+    showList(searchKey);
+}
 
