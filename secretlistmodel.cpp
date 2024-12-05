@@ -1,4 +1,4 @@
-#include "SecretListModel.h"
+#include "secretlistmodel.h"
 
 SecretListModel::SecretListModel(QObject *parent)
     : QAbstractListModel(parent) {}

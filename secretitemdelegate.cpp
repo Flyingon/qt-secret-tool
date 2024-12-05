@@ -1,4 +1,4 @@
-#include "SecretItemDelegate.h"
+#include "secretitemdelegate.h"
 
 SecretItemDelegate::SecretItemDelegate(QObject *parent)
     : QStyledItemDelegate(parent) {}
