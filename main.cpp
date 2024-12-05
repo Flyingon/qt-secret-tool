@@ -16,6 +16,10 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    // 设置应用程序图标
+    QIcon icon(":/icons/icon_yellow.png");
+    app.setWindowIcon(icon);
+
     // 初始化数据库管理器单例并打开数据库连接
     if (!DatabaseManager::instance().openDatabase()) {
         return -1;

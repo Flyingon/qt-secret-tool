@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     itemModel = new SecretListModel();
     SecretItemDelegate *delegate = new SecretItemDelegate();
     ui->listViewKey->setModel(itemModel);
