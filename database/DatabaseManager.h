@@ -2,10 +2,14 @@
 #define DATABASEMANAGER_H
 
 #include <QObject>
-#include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDate>
+
+// 引入 SQLCipher 的接口
+extern "C" {
+#include "sqlite3.h"
+}
 
 struct DBSecretItem {
     QString key;
@@ -22,7 +26,7 @@ public:
     static DatabaseManager& instance();
 
     // 打开数据库连接
-    bool openDatabase(QString dbPath);
+    bool openDatabase(QString dbPath, QString encryptionKey);
 
     // 关闭数据库连接
     void closeDatabase();
@@ -49,8 +53,8 @@ private:
     DatabaseManager(QObject* parent = nullptr);
     ~DatabaseManager();
 
-    // 数据库对象
-    QSqlDatabase m_database;
+    // 数据库连接句柄
+    sqlite3* m_dbHandle;
 
     // 私有化拷贝构造函数和赋值运算符，确保单例模式
     DatabaseManager(const DatabaseManager&) = delete;

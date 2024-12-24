@@ -13,6 +13,18 @@ set(BUILD_SHARED_LIBS OFF)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools Sql Dbus)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools Sql Dbus)
 
+# 添加 SQLCipher 路径
+set(SQLCIPHER_INCLUDE_DIR "/opt/homebrew/Cellar/sqlcipher/4.6.1/include/sqlcipher")
+set(SQLCIPHER_LIB_DIR "/opt/homebrew/Cellar/sqlcipher/4.6.1/lib")
+# 通过 CMake 指定 SQLCipher 头文件和库
+include_directories(${SQLCIPHER_INCLUDE_DIR})
+link_directories(${SQLCIPHER_LIB_DIR})
+# 启用 SQLITE_HAS_CODEC
+add_definitions(-DSQLITE_HAS_CODEC)
+
+# 设置 SQLCipher 库
+set(SQLCIPHER_LIB "sqlcipher")
+
 set(TS_FILES qt-secret-tool_zh_CN.ts)
 
 set(PROJECT_SOURCES
@@ -55,7 +67,11 @@ else()
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
-target_link_libraries(qt-secret-tool PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::DBus)
+message("QT_DIR", ${QT_DIR})
+
+target_link_libraries(qt-secret-tool
+        PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::DBus
+        ${SQLCIPHER_LIB})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

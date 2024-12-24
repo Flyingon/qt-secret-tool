@@ -23,8 +23,10 @@ int main(int argc, char *argv[])
     QString appDirPath = QCoreApplication::applicationDirPath();
     qDebug() << "应用程序二进制可执行文件所在路径: " << appDirPath;
     QString dbPath = appDirPath + "/secret_tool.db";
+    QString encryptionKey = "your_secure_password";
+
     // 初始化数据库管理器单例并打开数据库连接
-    if (!DatabaseManager::instance().openDatabase(dbPath)) {
+    if (!DatabaseManager::instance().openDatabase(dbPath, encryptionKey)) {
         return -1;
     }
 
