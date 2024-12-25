@@ -6,6 +6,11 @@
 #include "secretlistmodel.h"
 #include "secretitemdelegate.h"
 
+#include "./ui_mainwindow.h"
+#include "./savesecretwindow.h"
+#include "./database/DatabaseManager.h"
+#include "./window/config/configwindow.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -25,6 +30,8 @@ private slots:
     void onEditButtonClicked(int index); // 成员函数槽，处理编辑操作
     void handleSaveSecretSuccess();  // 用于处理 SaveSecretSuccess 关闭事件并调用showList方法
     void on_textEditSearch_textChanged();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;

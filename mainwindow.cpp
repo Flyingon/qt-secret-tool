@@ -1,8 +1,5 @@
 #include "mainwindow.h"
 #include <iostream>
-#include "./ui_mainwindow.h"
-#include "./savesecretwindow.h"
-#include "./database/DatabaseManager.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -165,5 +162,15 @@ void MainWindow::on_textEditSearch_textChanged()
 {
     QString searchKey = ui->textEditSearch->toPlainText();
     showList(searchKey);
+}
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    // 创建配置窗口实例
+    ConfigWindow *configWindow = new ConfigWindow(this);
+    // 以非模态窗口方式打开
+    configWindow->show();
+    return;
 }
 

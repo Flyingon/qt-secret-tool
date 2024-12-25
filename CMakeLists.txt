@@ -43,6 +43,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         savesecretwindow.h savesecretwindow.cpp savesecretwindow.ui
         secretlistmodel.h secretlistmodel.cpp
         secretitemdelegate.h secretitemdelegate.cpp
+        window/config/configwindow.cpp
         resources.qrc
     )
 # Define target properties for Android with Qt 6 as:
@@ -67,7 +68,7 @@ else()
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
-message("QT_DIR", ${QT_DIR})
+message("QT_DIR: ${QT_DIR}")
 
 target_link_libraries(qt-secret-tool
         PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::DBus
