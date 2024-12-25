@@ -19,8 +19,10 @@ DatabaseManager &DatabaseManager::instance() {
 
 // 打开数据库连接
 bool DatabaseManager::openDatabase(QString dbPath, QString encryptionKey) {
+    QByteArray dbPathUtf8 = dbPath.toUtf8();
+    QByteArray encryptionKeyUtf8 = encryptionKey.toUtf8();
     // 打开数据库
-    int rc = sqlite3_open_v2(dbPath.toUtf8().constData(), &m_dbHandle,
+    int rc = sqlite3_open_v2(dbPathUtf8, &m_dbHandle,
                              SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
     if (rc != SQLITE_OK) {
         qDebug() << "无法打开数据库：" << sqlite3_errmsg(m_dbHandle);
@@ -28,7 +30,7 @@ bool DatabaseManager::openDatabase(QString dbPath, QString encryptionKey) {
     }
 
     // 设置加密密钥
-    rc = sqlite3_key(m_dbHandle, encryptionKey.toUtf8().constData(), encryptionKey.length());
+    rc = sqlite3_key(m_dbHandle, encryptionKeyUtf8, encryptionKey.length());
     if (rc != SQLITE_OK) {
         qDebug() << "设置加密密钥失败：" << sqlite3_errmsg(m_dbHandle);
         sqlite3_close(m_dbHandle);
@@ -65,6 +67,11 @@ void DatabaseManager::closeDatabase() {
 }
 
 bool DatabaseManager::saveSecret(const DBSecretItem &item, QString &errMsg) {
+    // Bind parameters
+    // Ensure the QString is properly converted to UTF-8
+    QByteArray keyUtf8 = item.key.toUtf8();
+    QByteArray secretUtf8 = item.secret.toUtf8();
+
     // 先查询是否已存在对应key的记录
     sqlite3_stmt *stmt;
     const char *queryExistsSQL = "SELECT COUNT(*) FROM t_secret WHERE key = ?";
@@ -74,7 +81,7 @@ bool DatabaseManager::saveSecret(const DBSecretItem &item, QString &errMsg) {
         return false;
     }
 
-    sqlite3_bind_text(stmt, 1, item.key.toUtf8().constData(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, keyUtf8, -1, SQLITE_STATIC);
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_ROW) {
         errMsg = "查询记录是否存在失败：" + QString::fromUtf8(sqlite3_errmsg(m_dbHandle));
@@ -94,8 +101,8 @@ bool DatabaseManager::saveSecret(const DBSecretItem &item, QString &errMsg) {
             return false;
         }
 
-        sqlite3_bind_text(stmt, 1, item.secret.toUtf8().constData(), -1, SQLITE_STATIC);
-        sqlite3_bind_text(stmt, 2, item.key.toUtf8().constData(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 1, secretUtf8, -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, keyUtf8, -1, SQLITE_STATIC);
 
         rc = sqlite3_step(stmt);
         sqlite3_finalize(stmt);
@@ -115,12 +122,9 @@ bool DatabaseManager::saveSecret(const DBSecretItem &item, QString &errMsg) {
         return false;
     }
 
-    // Bind parameters
-    // Ensure the QString is properly converted to UTF-8
-    QByteArray keyUtf8 = item.key.toUtf8();
-    QByteArray secretUtf8 = item.secret.toUtf8();
-    sqlite3_bind_text(stmt, 1, keyUtf8.constData(), keyUtf8.size(), SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, secretUtf8.constData(), secretUtf8.size(), SQLITE_STATIC);
+
+    sqlite3_bind_text(stmt, 1, keyUtf8, -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, secretUtf8, -1, SQLITE_STATIC);
 
     rc = sqlite3_step(stmt);
     sqlite3_finalize(stmt);
@@ -135,6 +139,8 @@ bool DatabaseManager::saveSecret(const DBSecretItem &item, QString &errMsg) {
 
 // 根据账号删除密码记录
 bool DatabaseManager::deleteSecret(const QString &key) {
+    QByteArray keyUtf8 = key.toUtf8();
+
     sqlite3_stmt *stmt;
     const char *deleteSQL = "DELETE FROM t_secret WHERE key = ?";
     int rc = sqlite3_prepare_v2(m_dbHandle, deleteSQL, -1, &stmt, nullptr);
@@ -143,8 +149,7 @@ bool DatabaseManager::deleteSecret(const QString &key) {
         return false;
     }
 
-    sqlite3_bind_text(stmt, 1, key.toUtf8().constData(), -1, SQLITE_STATIC);
-
+    sqlite3_bind_text(stmt, 1, keyUtf8, -1, SQLITE_STATIC);
     rc = sqlite3_step(stmt);
     sqlite3_finalize(stmt);
 
@@ -158,6 +163,9 @@ bool DatabaseManager::deleteSecret(const QString &key) {
 
 // 更新密码记录，使用DBSecretItem作为参数，更新secret和updated_at字段（不更新created_at字段）
 bool DatabaseManager::updateSecret(const DBSecretItem &item, QString &errMsg) {
+    QByteArray keyUtf8 = item.key.toUtf8();
+    QByteArray secretUtf8 = item.secret.toUtf8();
+
     sqlite3_stmt *stmt;
     const char *updateSQL = "UPDATE t_secret SET secret = ?, updated_at = CURRENT_TIMESTAMP WHERE key = ?";
     int rc = sqlite3_prepare_v2(m_dbHandle, updateSQL, -1, &stmt, nullptr);
@@ -166,8 +174,8 @@ bool DatabaseManager::updateSecret(const DBSecretItem &item, QString &errMsg) {
         return false;
     }
 
-    sqlite3_bind_text(stmt, 1, item.secret.toUtf8().constData(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, item.key.toUtf8().constData(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, secretUtf8, -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, keyUtf8, -1, SQLITE_STATIC);
 
     rc = sqlite3_step(stmt);
     sqlite3_finalize(stmt);
@@ -183,6 +191,8 @@ bool DatabaseManager::updateSecret(const DBSecretItem &item, QString &errMsg) {
 
 // 根据账号查询密码记录
 bool DatabaseManager::querySecret(const QString &key, QString &secret) {
+    QByteArray keyUtf8 = key.toUtf8();
+
     sqlite3_stmt *stmt;
     const char *querySQL = "SELECT secret FROM t_secret WHERE key = ?";
     int rc = sqlite3_prepare_v2(m_dbHandle, querySQL, -1, &stmt, nullptr);
@@ -191,7 +201,7 @@ bool DatabaseManager::querySecret(const QString &key, QString &secret) {
         return false;
     }
 
-    sqlite3_bind_text(stmt, 1, key.toUtf8().constData(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, keyUtf8, -1, SQLITE_STATIC);
 
     rc = sqlite3_step(stmt);
     if (rc == SQLITE_ROW) {
@@ -214,8 +224,9 @@ bool DatabaseManager::querySecretList(const QString &key, int pageIndex, int pag
         queryStr += " WHERE key LIKE ?";
     }
     queryStr += " LIMIT ? OFFSET ?";
+    QByteArray queryStrUtf8 = queryStr.toUtf8();
 
-    int rc = sqlite3_prepare_v2(m_dbHandle, queryStr.toUtf8().constData(), -1, &stmt, nullptr);
+    int rc = sqlite3_prepare_v2(m_dbHandle, queryStrUtf8, -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         qDebug() << "查询密码记录列表失败：" << sqlite3_errmsg(m_dbHandle);
         return false;
@@ -259,8 +270,10 @@ bool DatabaseManager::fullTextSearch(const QString &keyword, std::vector<DBSecre
     }
 
     QString keywordPattern = "%" + keyword + "%";
-    sqlite3_bind_text(stmt, 1, keywordPattern.toUtf8().constData(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, keywordPattern.toUtf8().constData(), -1, SQLITE_STATIC);
+    QByteArray keywordPatternUtf8 = keywordPattern.toUtf8();
+
+    sqlite3_bind_text(stmt, 1, keywordPatternUtf8, -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, keywordPatternUtf8, -1, SQLITE_STATIC);
 
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
         DBSecretItem item;
