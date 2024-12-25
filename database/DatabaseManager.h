@@ -2,8 +2,6 @@
 #define DATABASEMANAGER_H
 
 #include <QObject>
-#include <QSqlQuery>
-#include <QSqlError>
 #include <QDate>
 
 // 引入 SQLCipher 的接口
