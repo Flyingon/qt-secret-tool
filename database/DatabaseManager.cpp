@@ -51,6 +51,7 @@ bool DatabaseManager::openDatabase(QString dbPath, QString encryptionKey) {
         m_dbHandle = nullptr;
         return false;
     }
+    rc = sqlite3_exec(m_dbHandle, "PRAGMA encoding = 'UTF-8';", nullptr, nullptr, &errMsg);
 
     return true;
 }
@@ -114,8 +115,12 @@ bool DatabaseManager::saveSecret(const DBSecretItem &item, QString &errMsg) {
         return false;
     }
 
-    sqlite3_bind_text(stmt, 1, item.key.toUtf8().constData(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, item.secret.toUtf8().constData(), -1, SQLITE_STATIC);
+    // Bind parameters
+    // Ensure the QString is properly converted to UTF-8
+    QByteArray keyUtf8 = item.key.toUtf8();
+    QByteArray secretUtf8 = item.secret.toUtf8();
+    sqlite3_bind_text(stmt, 1, keyUtf8.constData(), keyUtf8.size(), SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, secretUtf8.constData(), secretUtf8.size(), SQLITE_STATIC);
 
     rc = sqlite3_step(stmt);
     sqlite3_finalize(stmt);
