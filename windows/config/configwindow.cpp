@@ -64,7 +64,7 @@ void ConfigWindow::onSaveConfig() {
         SettingsManager::getInstance().setValue(dbPathKey, dbPath);
     }
 
-    QMessageBox::information(this, "配置保存", "配置已保存成功！");
+    QMessageBox::information(this, "配置保存", "配置已保存成功！重启生效！");
     this->close();
 }
 

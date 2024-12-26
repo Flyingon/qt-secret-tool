@@ -25,7 +25,7 @@ AddSecretWindow::~AddSecretWindow()
 void AddSecretWindow::SetToEdit(const SecretItem& secretItem)
 {
     // 修改标签文本样式
-    ui->label->setText("编辑");
+    ui->label->setText("编辑密钥");
     // 设置对应的文本编辑框内容
     ui->plainTextEdit->setPlainText(secretItem.key);
     ui->textEdit->setText(secretItem.secret);

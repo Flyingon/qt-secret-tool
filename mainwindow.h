@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMessageBox>
 #include "savesecretwindow.h"
 #include "secretlistmodel.h"
 #include "secretitemdelegate.h"
@@ -36,7 +37,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     AddSecretWindow *addSecretWindow;
-    int editRowIndex; // 新增，用于记录修改的行号
+    int editRowIndex; // 用于记录修改的行号
 
 private:
     SecretListModel *itemModel;

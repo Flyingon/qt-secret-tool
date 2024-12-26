@@ -24,12 +24,23 @@ MainWindow::MainWindow(QWidget *parent)
         QVariant keyVariant = itemModel->data(index, Qt::DisplayRole);
         QString key = keyVariant.toString();
 
-        if (!DatabaseManager::instance().deleteSecret(key)) {
-            qDebug() << "删除密码记录失败";
-            return;
+        // 添加确认弹框，询问用户是否确定删除
+        QMessageBox msgBox;
+        msgBox.setText("确定要删除该项密码记录吗？");
+        msgBox.setInformativeText("此操作不可撤销，记录 " + key + " 将被永久删除。");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        int ret = msgBox.exec();
+
+        // 根据用户选择决定是否执行删除操作
+        if (ret == QMessageBox::Yes) {
+            if (!DatabaseManager::instance().deleteSecret(key)) {
+                qDebug() << "删除密码记录失败";
+                return;
+            }
+            // 删除操作
+            itemModel->removeItem(index.row());
         }
-        // 删除操作
-        itemModel->removeItem(index.row());
 
     });
 
