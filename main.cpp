@@ -4,6 +4,7 @@
 #include <QLocale>
 #include <QTranslator>
 #include "database/DatabaseManager.h"
+#include "config/settingmanager.h"
 
 void cleanupFunction() {
     qDebug() << "Performing cleanup tasks before exiting...";
@@ -20,10 +21,17 @@ int main(int argc, char *argv[])
     QIcon icon(":/icons/icon_yellow.png");
     app.setWindowIcon(icon);
 
+
     QString appDirPath = QCoreApplication::applicationDirPath();
     qDebug() << "应用程序二进制可执行文件所在路径: " << appDirPath;
-    QString dbPath = appDirPath + "/secret_tool.db";
-    QString encryptionKey = "your_secure_password";
+    QString dbPath = SettingsManager::getInstance().value(dbPathKey).toString();
+    qDebug() << "dbPath 1: " << dbPath;
+    if (dbPath.isEmpty()) {
+        dbPath = appDirPath;
+    }
+    qDebug() << "dbPath 2: " << dbPath;
+    dbPath = dbPath + "/secret_tool.db";
+    QString encryptionKey = "bunenggaosubieren";
 
     // 初始化数据库管理器单例并打开数据库连接
     if (!DatabaseManager::instance().openDatabase(dbPath, encryptionKey)) {

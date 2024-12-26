@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QMessageBox>
+#include "../../config/settingmanager.h"
 
 class ConfigWindow : public QWidget
 {
@@ -26,9 +27,6 @@ private:
     QLabel *dbPathLabel;
     QLineEdit *dbPathLineEdit;
     QPushButton *dbPathButton;
-
-    QLabel *keyLabel;
-    QLineEdit *keyLineEdit;
 
     QPushButton *saveButton;
 };

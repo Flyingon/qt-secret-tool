@@ -19,9 +19,6 @@ ConfigWindow::ConfigWindow(QWidget *parent)
     dbPathLineEdit = new QLineEdit();
     dbPathButton = new QPushButton("选择数据库路径");
 
-    keyLabel = new QLabel("密钥:");
-    keyLineEdit = new QLineEdit();
-
     saveButton = new QPushButton("保存配置");
 
     // 设置布局
@@ -30,13 +27,12 @@ ConfigWindow::ConfigWindow(QWidget *parent)
     dbPathLayout->addWidget(dbPathLineEdit);
     dbPathLayout->addWidget(dbPathButton);
 
-    QHBoxLayout *keyLayout = new QHBoxLayout();
-    keyLayout->addWidget(keyLabel);
-    keyLayout->addWidget(keyLineEdit);
+//    QHBoxLayout *keyLayout = new QHBoxLayout();
+//    keyLayout->addWidget(keyLabel);
+//    keyLayout->addWidget(keyLineEdit);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addLayout(dbPathLayout);
-    layout->addLayout(keyLayout);
     layout->addWidget(saveButton);
 
     setLayout(layout);
@@ -58,28 +54,22 @@ void ConfigWindow::onSelectDatabasePath() {
 
 void ConfigWindow::onSaveConfig() {
     QString dbPath = dbPathLineEdit->text();
-    QString key = keyLineEdit->text();
 
-    // 校验输入
-    if (dbPath.isEmpty() || key.isEmpty()) {
-        QMessageBox::warning(this, "输入无效", "请填写完整的配置。");
-        return;
+    // dbPath 不输入则删除，用回默认值
+    if (dbPath.isEmpty()) {
+        SettingsManager::getInstance().remove(dbPathKey);
+    } else {
+        // 使用 QSettings 保存配置
+        QSettings settings("MyApp", "Config");
+        SettingsManager::getInstance().setValue(dbPathKey, dbPath);
     }
 
-    // 使用 QSettings 保存配置
-    QSettings settings("MyApp", "Config");
-    settings.setValue("databasePath", dbPath);
-    settings.setValue("key", key);
-
     QMessageBox::information(this, "配置保存", "配置已保存成功！");
+    this->close();
 }
 
 void ConfigWindow::loadConfig() {
     QSettings settings("MyApp", "Config");
-
-    QString dbPath = settings.value("databasePath").toString();
-    QString key = settings.value("key").toString();
-
+    QString dbPath = SettingsManager::getInstance().value(dbPathKey).toString();
     dbPathLineEdit->setText(dbPath);
-    keyLineEdit->setText(key);
 }
