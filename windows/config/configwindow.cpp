@@ -1,20 +1,17 @@
 #include "configwindow.h"
 
 ConfigWindow::ConfigWindow(QWidget *parent)
-        : QWidget(parent, Qt::Window)
-{
+        : QWidget(parent, Qt::Window) {
     setWindowTitle("配置窗口");
     // 设置默认大小 (例如 400x300)
     resize(400, 300);
 
     // 设置窗口为父窗口居中
     if (parent) {
-        // 获取父窗口的中心位置
-        QPoint parentCenter = parent->rect().center();
-        // 计算当前窗口的大小
-        QSize windowSize = size();
-        // 设置当前窗口的位置，使其居中于父窗口
-        move(parentCenter - QPoint(windowSize.width() / 2, windowSize.height() / 2));
+        QPoint parentPos = parent->pos();
+        int x = parentPos.x() + (parent->width() - this->width()) / 2;
+        int y = parentPos.y() + (parent->height() - this->height()) / 2;
+        move(x, y);
     }
 
     // 创建控件
@@ -28,12 +25,18 @@ ConfigWindow::ConfigWindow(QWidget *parent)
     saveButton = new QPushButton("保存配置");
 
     // 设置布局
+    QHBoxLayout *dbPathLayout = new QHBoxLayout();
+    dbPathLayout->addWidget(dbPathLabel);
+    dbPathLayout->addWidget(dbPathLineEdit);
+    dbPathLayout->addWidget(dbPathButton);
+
+    QHBoxLayout *keyLayout = new QHBoxLayout();
+    keyLayout->addWidget(keyLabel);
+    keyLayout->addWidget(keyLineEdit);
+
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(dbPathLabel);
-    layout->addWidget(dbPathLineEdit);
-    layout->addWidget(dbPathButton);
-    layout->addWidget(keyLabel);
-    layout->addWidget(keyLineEdit);
+    layout->addLayout(dbPathLayout);
+    layout->addLayout(keyLayout);
     layout->addWidget(saveButton);
 
     setLayout(layout);
@@ -46,16 +49,14 @@ ConfigWindow::ConfigWindow(QWidget *parent)
     loadConfig();
 }
 
-void ConfigWindow::onSelectDatabasePath()
-{
-    QString filePath = QFileDialog::getOpenFileName(this, "选择数据库文件", "", "数据库文件 (*.db)");
-    if (!filePath.isEmpty()) {
-        dbPathLineEdit->setText(filePath);
+void ConfigWindow::onSelectDatabasePath() {
+    QString dirPath = QFileDialog::getExistingDirectory(this, "选择数据库路径");
+    if (!dirPath.isEmpty()) {
+        dbPathLineEdit->setText(dirPath);
     }
 }
 
-void ConfigWindow::onSaveConfig()
-{
+void ConfigWindow::onSaveConfig() {
     QString dbPath = dbPathLineEdit->text();
     QString key = keyLineEdit->text();
 
@@ -73,8 +74,7 @@ void ConfigWindow::onSaveConfig()
     QMessageBox::information(this, "配置保存", "配置已保存成功！");
 }
 
-void ConfigWindow::loadConfig()
-{
+void ConfigWindow::loadConfig() {
     QSettings settings("MyApp", "Config");
 
     QString dbPath = settings.value("databasePath").toString();

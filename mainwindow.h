@@ -9,7 +9,7 @@
 #include "./ui_mainwindow.h"
 #include "./savesecretwindow.h"
 #include "./database/DatabaseManager.h"
-#include "./window/config/configwindow.h"
+#include "./windows/config/configwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

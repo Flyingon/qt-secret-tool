@@ -43,7 +43,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         savesecretwindow.h savesecretwindow.cpp savesecretwindow.ui
         secretlistmodel.h secretlistmodel.cpp
         secretitemdelegate.h secretitemdelegate.cpp
-        window/config/configwindow.cpp
+        windows/config/configwindow.cpp
         resources.qrc
     )
 # Define target properties for Android with Qt 6 as:
