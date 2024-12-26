@@ -27,6 +27,11 @@ set(SQLCIPHER_LIB "sqlcipher")
 
 set(TS_FILES qt-secret-tool_zh_CN.ts)
 
+if(APPLE)
+    # 设置应用程序图标（适用于Mac）
+    set_source_files_properties(resources/icon_yellow.png PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+endif()
+
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp

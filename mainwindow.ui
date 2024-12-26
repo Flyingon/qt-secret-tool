@@ -11,7 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>🔒Secret Tool</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="QIcon::ThemeIcon::SecurityHigh"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QListView" name="listViewKey">
