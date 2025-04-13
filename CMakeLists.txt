@@ -106,3 +106,31 @@ if(IOS)
         ${APP_ICON_RESOURCE_PATH}
     )
 endif()
+
+# 添加 macOS 平台支持
+if(APPLE AND NOT IOS)
+    # 设置 macOS 部署目标版本
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS deployment version")
+    
+    # 添加 Info.plist
+    set(MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/resources/macos/Info.plist")
+    
+    # 设置授权文件
+    set(ENTITLEMENTS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/macos/QtSecretTool.entitlements")
+    
+    # 添加 Info.plist 文件和授权配置
+    set_target_properties(QtSecretTool PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_INFO_PLIST "${MACOSX_BUNDLE_INFO_PLIST}"
+        # 添加授权文件配置
+        XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${ENTITLEMENTS_FILE}"
+        # 确保正确的代码签名
+        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development"
+        # 使用自动配置文件
+        XCODE_ATTRIBUTE_CODE_SIGN_STYLE "Automatic"
+        # 设置开发团队ID
+        XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "LU5WE6SGJ8"
+        # 启用强制代码签名
+        XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES
+    )
+endif()
