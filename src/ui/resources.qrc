@@ -1,0 +1,13 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/PasswordList.qml</file>
+        <file>qml/PasswordDetail.qml</file>
+        <file>qml/AddPassword.qml</file>
+        <file>qml/SearchBar.qml</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file>icons/search.svg</file>
+    </qresource>
+</RCC>
